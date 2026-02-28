@@ -366,3 +366,93 @@ select.chat-settings-select {
     background-position: right 12px center;
     background-size: 12px;
 }
+
+/* ================================
+   关于区块样式
+   设置页面底部的作者信息和联系方式
+   ================================ */
+
+/* 关于区块容器：底部居中展示作者信息 */
+.about-section {
+    text-align: center;
+    padding: 24px 16px 16px;
+    margin-top: 4px;
+}
+
+/* 插件名称标题 */
+.about-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+/* 作者名 */
+.about-author {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin-bottom: 12px;
+}
+
+/* 链接容器：交流群和打赏入口的行内布局 */
+.about-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+}
+
+/* 链接样式：可点击的文字入口 */
+.about-link {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+/* 链接悬停效果 */
+.about-link:hover {
+    color: #3370ff;
+}
+
+/* 链接之间的分隔符 */
+.about-divider {
+    color: var(--text-tertiary);
+    font-size: 12px;
+}
+
+/* 内联二维码展示容器 */
+.inline-qr-container {
+    margin-top: 16px;
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* 二维码图片包装器 */
+.inline-qr-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 二维码图片样式 */
+#inline-qr-image {
+    width: 80%;
+    max-width: 280px;
+    height: auto;
+    border-radius: 4px;
+    object-fit: contain;
+}
+
+/* 淡入动画 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

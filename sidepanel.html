@@ -178,6 +178,11 @@
       flex-direction: column;
     }
 
+    /* 设置Tab允许滚动，以便展示底部作者信息和二维码 */
+    #tab-settings .docs-container {
+      overflow-y: auto;
+    }
+
     .card {
       background: white;
       border-radius: 8px;
@@ -603,6 +608,25 @@
               style="margin-top: 8px; background: #fef2f2; color: #dc2626;">清空所有数据</button>
           </div>
         </div>
+
+        <!-- 关于区块：展示作者信息和联系方式入口 -->
+        <div class="about-section">
+          <div class="about-title">飞书多维表格 AI 助手</div>
+          <div class="about-author">by @玉清selva</div>
+          <div class="about-links">
+            <a href="javascript:void(0)" id="about-link-group" class="about-link">💬 加入交流群</a>
+            <span class="about-divider">·</span>
+            <a href="javascript:void(0)" id="about-link-donate" class="about-link">☕ 打赏作者</a>
+          </div>
+
+          <!-- 内联二维码展示容器：点击链接后在此处展开图片 -->
+          <div id="inline-qr-container" class="inline-qr-container" style="display: none;">
+            <div class="inline-qr-wrap">
+              <img id="inline-qr-image" src="" alt="二维码">
+              <div id="inline-qr-desc" class="inline-qr-desc"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -716,6 +740,8 @@
   <script src="project-manager.js"></script>
   <script src="lib/marked.min.js"></script>
   <script src="sidepanel.js"></script>
+  <!-- 关于区块逻辑：二维码内联展示（外部文件，符合 Manifest V3 CSP 要求） -->
+  <script src="about.js"></script>
 </body>
 
 </html>
