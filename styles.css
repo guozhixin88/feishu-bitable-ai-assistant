@@ -1,0 +1,458 @@
+/* Basic styles */
+:root {
+    --bg-primary: #fff;
+    --bg-secondary: #FAFAFA;
+    --bg-hover: #f0f0f0;
+    --text-primary: #1f2329;
+    --text-secondary: #666;
+    --text-tertiary: #999;
+    --border-color: #e0e0e0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-secondary);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Header */
+.app-header {
+    padding: 12px 16px;
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+/* Document Styles */
+#markdown-preview {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #333;
+}
+
+#markdown-preview .tab-content {
+    /* 覆盖掉原先用于纯文本的 pre-wrap，防止 marked 渲染出的 HTML \n 变成空行导致间距过大 */
+    white-space: normal !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+#markdown-preview h1 {
+    font-size: 18px;
+    margin: 16px 0 8px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+}
+
+#markdown-preview h2 {
+    font-size: 16px;
+    margin: 16px 0 8px;
+    color: #3370ff;
+}
+
+#markdown-preview h3 {
+    font-size: 14px;
+    margin: 12px 0 6px;
+}
+
+#markdown-preview table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 12px;
+}
+
+#markdown-preview th,
+#markdown-preview td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+#markdown-preview th {
+    background-color: #FAFAFA;
+    font-weight: 600;
+}
+
+#markdown-preview code {
+    background-color: #FAFAFA;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-family: Monaco, monospace;
+    font-size: 12px;
+}
+
+#markdown-preview pre {
+    background-color: #FAFAFA;
+    padding: 12px;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+#markdown-preview blockquote {
+    margin: 10px 0;
+    padding: 8px 12px;
+    background: #f0f7ff;
+    border-left: 4px solid #3370ff;
+    color: #444;
+}
+
+/* Settings Styles */
+.chat-settings-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #3370ff;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.chat-settings-group {
+    margin-bottom: 20px;
+}
+
+.chat-settings-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+}
+
+.chat-settings-input,
+.chat-settings-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 13px;
+    background-color: #fff;
+    color: var(--text-primary);
+    box-sizing: border-box;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.chat-settings-input:focus,
+.chat-settings-select:focus {
+    border-color: #3370ff;
+}
+
+.chat-settings-info {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 6px;
+    line-height: 1.4;
+}
+
+.chat-settings-btn {
+    width: 100%;
+    margin-top: 12px;
+    padding: 10px 16px;
+    background: #3370ff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.chat-settings-btn:hover {
+    background: #285ecf;
+}
+
+.chat-settings-btn.secondary {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    margin-top: 0;
+}
+
+.chat-settings-btn.secondary:hover {
+    background: var(--bg-hover);
+}
+
+.chat-settings-status {
+    margin-top: 12px;
+    font-size: 12px;
+    text-align: center;
+    padding: 8px;
+    border-radius: 4px;
+    display: none;
+}
+
+.chat-settings-status.success {
+    display: block;
+    background-color: #e8ffea;
+    color: #26b226;
+}
+
+.chat-settings-status.error {
+    display: block;
+    background-color: #ffeceb;
+    color: #f54a45;
+}
+
+/* Reference Menu Drawer (Bottom Sheet) */
+.reference-drawer {
+    position: fixed;
+    bottom: -100%;
+    left: 0;
+    width: 100%;
+    height: 70vh;
+    /* Occupy 70% of screen height */
+    background: #fff;
+    border-radius: 12px 12px 0 0;
+    z-index: 1100;
+    transition: bottom 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+.reference-drawer.open {
+    bottom: 0;
+}
+
+.reference-drawer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1050;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s;
+}
+
+.reference-drawer-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.reference-drawer-header {
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.reference-drawer-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.reference-drawer-close {
+    font-size: 24px;
+    color: #999;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.reference-drawer-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+}
+
+.reference-section {
+    margin-bottom: 24px;
+}
+
+.reference-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.reference-section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.reference-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.reference-action-btn {
+    padding: 4px 8px;
+    font-size: 11px;
+    background: #f0f0f0;
+    color: #666;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.reference-action-btn:hover {
+    background: #e0e0e0;
+}
+
+.reference-list {
+    border: 1px solid #eee;
+    border-radius: 6px;
+    padding: 8px;
+    background: #fafafa;
+    max-height: 300px;
+    /* Limit inner scroll */
+    overflow-y: auto;
+}
+
+/* Checkbox Item Styling */
+.reference-item {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.reference-item:last-child {
+    border-bottom: none;
+}
+
+.reference-item:hover {
+    background: #f5f5f5;
+}
+
+.reference-item input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.reference-drawer-footer {
+    padding: 16px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+}
+
+.reference-summary {
+    font-size: 13px;
+    color: #666;
+}
+
+/* Custom Dropdown Styling for Padding Fix */
+select.toc-select,
+select.chat-settings-select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 32px !important;
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2.5 4.5L6 8L9.5 4.5' stroke='%23666' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 12px;
+}
+
+/* ================================
+   关于区块样式
+   设置页面底部的作者信息和联系方式
+   ================================ */
+
+/* 关于区块容器：底部居中展示作者信息 */
+.about-section {
+    text-align: center;
+    padding: 24px 16px 16px;
+    margin-top: 4px;
+}
+
+/* 插件名称标题 */
+.about-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+/* 作者名 */
+.about-author {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin-bottom: 12px;
+}
+
+/* 链接容器：交流群和打赏入口的行内布局 */
+.about-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+}
+
+/* 链接样式：可点击的文字入口 */
+.about-link {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+/* 链接悬停效果 */
+.about-link:hover {
+    color: #3370ff;
+}
+
+/* 链接之间的分隔符 */
+.about-divider {
+    color: var(--text-tertiary);
+    font-size: 12px;
+}
+
+/* 内联二维码展示容器 */
+.inline-qr-container {
+    margin-top: 16px;
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* 二维码图片包装器 */
+.inline-qr-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 二维码图片样式 */
+#inline-qr-image {
+    width: 80%;
+    max-width: 280px;
+    height: auto;
+    border-radius: 4px;
+    object-fit: contain;
+}
+
+/* 淡入动画 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

@@ -1,0 +1,14 @@
+# Data & Private files
+data/
+legacy/
+docs/
+*.base
+
+# IDE & OS
+.DS_Store
+.vscode/
+.idea/
+
+# Logs
+*.log
+debug_log.txt

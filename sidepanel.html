@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>飞书实时助手</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="chat-styles.css">
+
+  <style>
+    :root {
+      --bg-primary: #fff;
+      --bg-secondary: #FAFAFA;
+      --bg-hover: #f0f0f0;
+      --text-primary: #1f2329;
+      --text-secondary: #666;
+      --text-tertiary: #999;
+      --border-color: #e0e0e0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-secondary);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    /* Header */
+    .app-header {
+      padding: 12px 16px;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      /* 占据剩余空间 */
+      min-width: 0;
+      /* 防止挤压 */
+    }
+
+    .app-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0;
+      white-space: nowrap;
+    }
+
+    .app-logo {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+      border-radius: 4px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .project-name-display {
+      font-size: 13px;
+      color: var(--text-secondary);
+      background: var(--bg-secondary);
+      padding: 2px 8px;
+      border-radius: 4px;
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: none;
+      /* 初始隐藏 */
+      border: 1px solid transparent;
+      cursor: default;
+    }
+
+    .refresh-ctx-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      color: var(--text-tertiary);
+      display: flex;
+      align-items: center;
+      transition: all 0.2s;
+    }
+
+    .refresh-ctx-btn:hover {
+      background-color: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .app-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .status-disconnected {
+      background-color: #ffeceb;
+      color: #f54a45;
+    }
+
+    .status-connected {
+      background-color: #e8ffea;
+      color: #26b226;
+    }
+
+    /* Main Tabs */
+    .main-tabs {
+      display: flex;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .main-tab-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .main-tab-btn:hover {
+      background: var(--bg-hover);
+    }
+
+    .main-tab-btn.active {
+      color: #4f46e5;
+      border-bottom-color: #4f46e5;
+    }
+
+    /* Tab Content */
+    .main-tab-content {
+      flex: 1;
+      display: none;
+      overflow: hidden;
+    }
+
+    .main-tab-content.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Documents Tab */
+    .docs-container {
+      flex: 1;
+      overflow-y: hidden;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 设置Tab允许滚动，以便展示底部作者信息和二维码 */
+    #tab-settings .docs-container {
+      overflow-y: auto;
+    }
+
+    .card {
+      background: white;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    #upload-zone {
+      border: 2px dashed #3370ff;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      background: #f0f5ff;
+    }
+
+    #upload-zone:hover,
+    #upload-zone.dragover {
+      background: #e0ebff;
+      border-color: #1a56db;
+    }
+
+    #upload-zone p {
+      margin: 0;
+      color: #3370ff;
+      font-size: 14px;
+    }
+
+    #upload-zone .icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .action-btn {
+      width: 100%;
+      background-color: #3370ff;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+
+    .action-btn:hover {
+      background-color: #285ecf;
+    }
+
+    .action-btn.secondary {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+
+    /* Document Tabs */
+    .tab-bar {
+      display: flex;
+      border-bottom: 2px solid #eee;
+      margin-bottom: 0;
+      overflow-x: auto;
+      white-space: nowrap;
+      position: sticky;
+      top: 0;
+      background: white;
+      z-index: 10;
+      flex-wrap: nowrap;
+    }
+
+    .tab-bar::-webkit-scrollbar {
+      display: none;
+      /* Hide scrollbar */
+      width: 0;
+      height: 0;
+    }
+
+    /* Remove .tab-bar::-webkit-scrollbar-thumb styles if present or just override */
+
+
+    .tab-btn {
+      padding: 8px 12px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 13px;
+      color: #666;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    .tab-btn.active {
+      color: #3370ff;
+      border-bottom-color: #3370ff;
+      background-color: #f0f5ff;
+    }
+
+    .tab-content {
+      font-size: 12px;
+      font-family: Consolas, Monaco, "Courier New", monospace;
+      white-space: pre-wrap;
+      overflow-y: auto;
+      flex: 1;
+      min-height: 0;
+      padding: 10px;
+      background: #ffffff;
+    }
+
+    #log-container {
+      margin-top: 10px;
+      border-top: 1px solid #ddd;
+      padding-top: 5px;
+    }
+
+    /* Chat Tab */
+    #chat-panel {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      /* 允许收缩 */
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      /* 防止整体滚动 */
+    }
+
+    /* Export Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 8px;
+      width: 300px;
+      padding: 16px;
+    }
+
+    .modal-header {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-close {
+      cursor: pointer;
+      color: #999;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .modal-body {
+      margin-bottom: 16px;
+    }
+
+    .export-option {
+      display: flex;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .export-option:last-child {
+      border-bottom: none;
+    }
+
+    .export-option input {
+      margin-right: 10px;
+    }
+
+    .export-option label {
+      font-size: 14px;
+      color: var(--text-primary);
+      flex: 1;
+      cursor: pointer;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+  </style>
+  <!-- pako library for gzip decompression (local) -->
+  <script src="pako.min.js"></script>
+</head>
+
+<body>
+  <div class="main-container">
+    <!-- Header -->
+    <!-- Header -->
+    <div class="app-header">
+      <div class="header-left">
+        <img src="icons/icon48.png" alt="Logo" class="app-logo">
+        <h1 class="app-title">飞书多维表格 AI 助手</h1>
+        <div id="project-name-display" class="project-name-display" title="当前表格名称"></div>
+        <button id="refresh-ctx-btn" class="refresh-ctx-btn" title="刷新表格信息">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" />
+            <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" />
+          </svg>
+        </button>
+      </div>
+      <div class="app-status">
+        <span id="status" class="status-badge status-disconnected">未连接</span>
+      </div>
+    </div>
+
+    <div class="main-tabs">
+      <button class="main-tab-btn active" data-tab="docs">📄 文档</button>
+
+      <button class="main-tab-btn" data-tab="chat">💬 AI</button>
+      <button class="main-tab-btn" data-tab="settings">⚙️</button>
+    </div>
+
+    <!-- Documents Tab -->
+    <div id="tab-docs" class="main-tab-content active">
+      <div class="docs-container">
+        <!-- 同步/初始化按钮 -->
+        <div class="card" style="background: #eef2ff; border: 1px solid #c7d2fe;">
+          <button id="sync-btn" class="action-btn"
+            style="display: flex; justify-content: center; align-items: center; gap: 8px;">
+            <span style="font-size: 16px;">🔄</span>
+            <span>一键同步 (初始化)</span>
+          </button>
+          <div style="text-align: center; margin-top: 8px; font-size: 12px; color: #666;">
+            自动下载最新的 .base 并对比变动
+          </div>
+        </div>
+
+        <div class="card" style="border: 0.5px solid #E5E5E5;">
+          <div id="upload-zone">
+            <div class="icon">📁</div>
+            <p>拖拽 .base 文件到这里<br>或点击选择文件</p>
+            <input type="file" id="file-input" accept=".base" style="display: none;">
+          </div>
+        </div>
+
+
+
+        <div id="preview-card-container" class="card"
+          style="padding: 0; display: none; flex: 1; flex-direction: column; min-height: 300px; overflow: hidden; border: 0.5px solid #E5E5E5;">
+          <div id="markdown-preview" style="display: flex; flex-direction: column; flex: 1; min-height: 0;"></div>
+        </div>
+
+        <div id="log-container"></div>
+      </div>
+    </div>
+
+
+
+
+
+
+    <!-- Chat Tab -->
+    <div id="tab-chat" class="main-tab-content">
+      <div id="chat-panel" class="chat-container">
+        <!-- 点击外部关闭侧边栏的遮罩 -->
+        <div id="chat-sidebar-overlay" class="chat-sidebar-overlay"></div>
+        <!-- 会话侧边栏 -->
+        <div id="chat-sidebar" class="chat-sidebar">
+          <div class="chat-sidebar-header">
+            <span class="chat-sidebar-title">历史对话</span>
+            <div style="display: flex; gap: 8px;">
+              <button id="chat-new-btn" class="chat-new-btn">+ 新建</button>
+              <button id="chat-sidebar-close-btn" class="chat-new-btn"
+                style="background: #e5e7eb; color: #374151;">✕</button>
+            </div>
+          </div>
+          <div id="chat-session-list" class="chat-session-list"></div>
+        </div>
+
+        <!-- 需要配置 API 的提示 -->
+        <div id="chat-setup-required" class="chat-setup-required" style="display: none;">
+          <div class="chat-setup-icon">🔑</div>
+          <div class="chat-setup-title">需要配置 API Key</div>
+          <div class="chat-setup-desc">请先在设置中配置 OpenAI API Key</div>
+          <button class="chat-setup-btn" onclick="switchMainTab('settings')">前往设置</button>
+        </div>
+
+        <!-- Chat 主界面 -->
+        <div id="chat-main" class="chat-main-container" style="display: none;">
+          <!-- 工具栏 -->
+          <div class="chat-toolbar">
+            <div class="chat-toolbar-left">
+              <button id="chat-menu-btn" class="chat-toolbar-btn" title="历史对话">
+                ☰
+              </button>
+              <span id="chat-current-title" class="chat-title">新对话</span>
+            </div>
+            <div class="chat-toolbar-right" style="display: flex; gap: 8px;">
+              <button id="chat-new-inline-btn" class="chat-toolbar-btn" title="新建对话">
+                ➕
+              </button>
+            </div>
+          </div>
+
+          <!-- 消息列表 -->
+          <div id="chat-messages" class="chat-messages">
+            <div class="chat-empty">
+              <div class="chat-empty-icon">💬</div>
+              <div class="chat-empty-text">
+                发送消息开始对话<br>
+                AI 会根据你的文档回答问题
+              </div>
+            </div>
+          </div>
+
+          <!-- 输入区域 -->
+          <div class="chat-input-container">
+            <!-- Context 状态显示栏 -->
+            <div id="chat-context-status"
+              style="font-size: 11px; color: #666; padding: 4px 8px; background: #f8f9fa; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span id="chat-context-status-text">引用数据: 全量数据</span>
+              <span id="chat-context-status-count" style="display: none;"></span>
+            </div>
+            <!-- 图片预览 -->
+            <div id="chat-image-preview" class="chat-image-preview" style="display: none;">
+              <img id="chat-preview-img" src="" alt="预览">
+              <button id="chat-remove-image" class="chat-image-preview-remove">✕</button>
+            </div>
+
+            <div class="chat-input-wrapper">
+              <button id="chat-context-btn" class="chat-image-btn" title="AI 上下文" style="margin-right: 4px;">
+                📚
+              </button>
+              <button id="chat-image-btn" class="chat-image-btn" title="添加图片">
+                📷
+              </button>
+              <textarea id="chat-input" class="chat-input" placeholder="输入消息..." rows="1"></textarea>
+              <button id="chat-send-btn" class="chat-send-btn">发送</button>
+            </div>
+            <input type="file" id="chat-image-input" accept="image/*" style="display: none;">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Tab -->
+    <div id="tab-settings" class="main-tab-content">
+      <div class="docs-container">
+        <div class="card chat-settings" style="border: 0.5px solid #E5E5E5;">
+          <div class="chat-settings-title">🤖 AI 配置</div>
+
+          <div class="chat-settings-group">
+            <label class="chat-settings-label">AI 提供商</label>
+            <select id="settings-provider" class="chat-settings-select">
+              <option value="openai">OpenAI</option>
+              <option value="openrouter">OpenRouter</option>
+              <option value="deepseek">DeepSeek</option>
+              <option value="siliconflow">SiliconFlow (硅基流动)</option>
+              <option value="volcengine">豆包 (火山引擎)</option>
+              <option value="kimi">Kimi (Moonshot)</option>
+              <option value="qwen">通义千问 (Qwen)</option>
+              <option value="google">Google Gemini</option>
+              <option value="anthropic">Anthropic (Claude)</option>
+            </select>
+          </div>
+
+          <div class="chat-settings-group">
+            <label class="chat-settings-label">API Key</label>
+            <input type="password" id="settings-api-key" class="chat-settings-input" placeholder="请输入 API Key">
+          </div>
+
+          <div class="chat-settings-group">
+            <label class="chat-settings-label">API Endpoint</label>
+            <input type="text" id="settings-endpoint" class="chat-settings-input" placeholder="默认使用提供商官方地址">
+            <div class="chat-settings-info">如使用代理，请输入完整的 URL</div>
+          </div>
+
+          <div class="chat-settings-group">
+            <label class="chat-settings-label">模型</label>
+            <div style="display: flex; gap: 8px;">
+              <select id="settings-model" class="chat-settings-select" style="flex: 1;">
+                <option value="gpt-4o">GPT-4o (OpenAI)</option>
+              </select>
+              <button id="settings-refresh-models-btn" class="chat-settings-btn secondary"
+                style="width: auto; padding: 0 12px; margin-top: 0;" title="从提供商拉取最新模型">🔄</button>
+            </div>
+          </div>
+
+          <div class="chat-settings-group">
+            <label class="chat-settings-label">系统提示词 (System Prompt)</label>
+            <textarea id="settings-system-prompt" class="chat-settings-input" rows="6"
+              placeholder="自定义 AI 的系统提示词..."></textarea>
+            <div style="display: flex; justify-content: flex-end; margin-top: 8px;">
+              <button id="settings-reset-prompt-btn" class="chat-settings-btn secondary"
+                style="width: auto; padding: 4px 12px; font-size: 12px;">恢复默认</button>
+            </div>
+          </div>
+
+          <button id="settings-save-btn" class="chat-settings-btn">保存配置</button>
+          <button id="settings-test-btn" class="chat-settings-btn secondary" style="margin-top: 8px;">测试连接</button>
+          <div id="settings-status" class="chat-settings-status"></div>
+        </div>
+
+        <div class="card chat-settings" style="border: 0.5px solid #E5E5E5;">
+          <div class="chat-settings-title">📝 数据管理</div>
+          <div class="chat-settings-group">
+            <button id="settings-clear-docs" class="chat-settings-btn secondary">清空文档数据</button>
+            <button id="settings-clear-chat" class="chat-settings-btn secondary"
+              style="margin-top: 8px;">清空所有对话</button>
+            <button id="settings-clear-all" class="chat-settings-btn secondary"
+              style="margin-top: 8px; background: #fef2f2; color: #dc2626;">清空所有数据</button>
+          </div>
+        </div>
+
+        <!-- 关于区块：展示作者信息和联系方式入口 -->
+        <div class="about-section">
+          <div class="about-title">飞书多维表格 AI 助手</div>
+          <div class="about-author">by @玉清selva</div>
+          <div class="about-links">
+            <a href="javascript:void(0)" id="about-link-group" class="about-link">💬 加入交流群</a>
+            <span class="about-divider">·</span>
+            <a href="javascript:void(0)" id="about-link-donate" class="about-link">☕ 打赏作者</a>
+          </div>
+
+          <!-- 内联二维码展示容器：点击链接后在此处展开图片 -->
+          <div id="inline-qr-container" class="inline-qr-container" style="display: none;">
+            <div class="inline-qr-wrap">
+              <img id="inline-qr-image" src="" alt="二维码">
+              <div id="inline-qr-desc" class="inline-qr-desc"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Modal -->
+  <div id="export-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span>选择导出内容</span>
+        <span id="export-modal-close" class="modal-close">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div class="export-option">
+          <input type="checkbox" id="export-doc-fields" checked>
+          <label for="export-doc-fields">全量字段表 (.md)</label>
+        </div>
+        <div class="export-option">
+          <input type="checkbox" id="export-doc-relations" checked>
+          <label for="export-doc-relations">关联关系图 (.md)</label>
+        </div>
+        <div class="export-option">
+          <input type="checkbox" id="export-doc-automation" checked>
+          <label for="export-doc-automation">自动化地图 (.md)</label>
+        </div>
+        <div class="export-option">
+          <input type="checkbox" id="export-doc-report" checked>
+          <label for="export-doc-report">校验报告 (.md)</label>
+        </div>
+        <div class="export-option">
+          <input type="checkbox" id="export-chat-history" checked>
+          <label for="export-chat-history">聊天记录 (.json)</label>
+        </div>
+        <div class="export-option">
+          <input type="checkbox" id="export-base-code">
+          <label for="export-base-code">原始 Base 数据 (.json)</label>
+        </div>
+        <!-- 隐藏的完整备份选项 -->
+        <div class="export-option">
+          <input type="checkbox" id="export-full-backup">
+          <label for="export-full-backup">完整项目备份 (.json)</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="export-cancel-btn" class="action-btn secondary">取消</button>
+        <button id="export-confirm-btn" class="action-btn">确定导出</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reference Data Drawer (Bottom Sheet) -->
+  <div id="reference-menu-drawer" class="reference-drawer">
+    <div class="reference-drawer-header">
+      <span class="reference-drawer-title">📚 引用数据</span>
+      <span id="reference-drawer-close" class="reference-drawer-close">&times;</span>
+    </div>
+
+    <div class="reference-drawer-body">
+      <div class="reference-section">
+        <div class="reference-section-header">
+          <span class="reference-section-title">📄 全局文档 (包含完整内容)</span>
+        </div>
+        <div id="ctx-docs-list" class="reference-list">
+          <!-- JS Rendered -->
+        </div>
+      </div>
+
+      <div class="reference-section">
+        <div class="reference-section-header">
+          <span class="reference-section-title">📊 数据表</span>
+          <div class="reference-actions">
+            <button id="ctx-tables-all" class="reference-action-btn">全选</button>
+            <button id="ctx-tables-none" class="reference-action-btn">清空</button>
+          </div>
+        </div>
+        <div id="ctx-tables-list" class="reference-list">
+          <!-- JS Rendered -->
+        </div>
+      </div>
+
+      <div class="reference-section">
+        <div class="reference-section-header">
+          <span class="reference-section-title">⚙️ 自动化工作流</span>
+          <div class="reference-actions">
+            <button id="ctx-workflows-all" class="reference-action-btn">全选</button>
+            <button id="ctx-workflows-none" class="reference-action-btn">清空</button>
+          </div>
+        </div>
+        <div id="ctx-workflows-list" class="reference-list">
+          <!-- JS Rendered -->
+        </div>
+      </div>
+    </div>
+
+    <div class="reference-drawer-footer">
+      <span id="ctx-summary-count" class="reference-summary">已选: 0 表, 0 工作流</span>
+      <button id="reference-drawer-confirm" class="action-btn" style="width: auto; padding: 6px 20px;">完成</button>
+    </div>
+  </div>
+  <div id="reference-drawer-overlay" class="reference-drawer-overlay"></div>
+
+  <script src="base-file-parser.js"></script>
+  <script src="relationship-parser.js"></script>
+  <script src="automation-parser.js"></script>
+  <script src="completeness-checker.js"></script>
+  <script src="parser.js"></script>
+  <script src="ai-api.js"></script>
+  <script src="ai-chat.js"></script>
+  <script src="change-tracker.js"></script>
+  <script src="change-detector.js"></script>
+  <script src="db.js"></script>
+  <script src="project-manager.js"></script>
+  <script src="lib/marked.min.js"></script>
+  <script src="sidepanel.js"></script>
+  <!-- 关于区块逻辑：二维码内联展示（外部文件，符合 Manifest V3 CSP 要求） -->
+  <script src="about.js"></script>
+</body>
+
+</html>
